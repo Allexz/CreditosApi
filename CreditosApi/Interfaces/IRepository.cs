@@ -72,6 +72,31 @@ public interface IRepository<T> where T : class
     /// Remove uma entidade pelo ID
     /// </summary>
     Task<bool> RemoveByIdAsync(long id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Salva todas as alterações no contexto do banco de dados
+    /// </summary>
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Salva todas as alterações no contexto do banco de dados (síncrono)
+    /// </summary>
+    int SaveChanges();
+
+    /// <summary>
+    /// Inicia uma transação
+    /// </summary>
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Confirma a transação atual
+    /// </summary>
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Reverte a transação atual
+    /// </summary>
+    Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
 }
 
 

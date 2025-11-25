@@ -1,0 +1,42 @@
+services:
+  creditosapi:
+    image: creditosapi
+    build:
+      context: .
+      dockerfile: CreditosApi/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Container
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - creditos-network
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: CreditosDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: senha123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - creditos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  creditos-network:
+    driver: bridge
