@@ -29,11 +29,9 @@
 		<Folder Include="Data\Configurations\" />
 		<Folder Include="Data\Migrations\" />
 		<Folder Include="Data\Repositories\" />
-		<Folder Include="Interfaces\" />
-		<Folder Include="Models\Common\" />
-		<Folder Include="Models\Entities\" />
 		<Folder Include="Models\Requests\" />
 		<Folder Include="Models\Responses\" />
+		<Folder Include="Models\Response\" />
 		<Folder Include="Services\" />
 		<Folder Include="Tests\" />
 		
