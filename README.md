@@ -19,7 +19,10 @@ Este projeto utiliza as seguintes tecnologias:
 ## Pontos de Ajuste  
 1 . **Configurações de Conexão**: Ajuste as strings de conexão para o banco de dados PostgreSQL e o servidor Kafka no arquivo `appsettings.json` ou nas variáveis de ambiente conforme necessário.  
 2 . **Portas de Serviço**: Verifique se as portas utilizadas (8080 para a API, 8081 para Kafka-UI, 5432 para PostgreSQL) estão disponíveis no seu ambiente local ou ajuste conforme necessário.  
-3.  **Regras de Negócio**: A propriedade Data da Constituição (DataConstituicao) precisa estar no futuro.  
+3.  **Regras de Negócio**: A propriedade Data da Constituição (DataConstituicao) precisa estar no futuro.    
+
+## Importante:  
+Downgrade para versão do .NET 6 em produção.
 
 ## Caminhos para Acesso aos Recursos
 
