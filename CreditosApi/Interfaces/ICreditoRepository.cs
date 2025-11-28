@@ -1,11 +1,12 @@
-﻿using CreditosApi.Models.Request;
+﻿using CreditosApi.Models.Entities;
+using CreditosApi.Models.Request;
 
 namespace CreditosApi.Interfaces;
 
 /// <summary>
 /// Interface específica para o repositório de Crédito
 /// </summary>
-public interface ICreditoRepository : IRepository<CreditoIntegracaoRequest>
+public interface ICreditoRepository : IRepository<CreditoIntegracao>
 {
-     Task<IEnumerable<CreditoIntegracaoRequest>> GetByNumeroCreditoAsync(string numeroCredito, CancellationToken cancellationToken);
+     Task<IEnumerable<CreditoIntegracao>> GetByNumeroCreditoAsync(string numeroCredito, CancellationToken cancellationToken);
  }

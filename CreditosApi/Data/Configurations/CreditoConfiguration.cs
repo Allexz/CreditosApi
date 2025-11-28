@@ -1,12 +1,12 @@
+using CreditosApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using CreditosApi.Models.Request;
 
 namespace CreditosApi.Data.Configuration;
 
-public class CreditoConfiguration : IEntityTypeConfiguration<CreditoIntegracaoRequest>
+public class CreditoConfiguration : IEntityTypeConfiguration<CreditoIntegracao>
 {
-    public void Configure(EntityTypeBuilder<CreditoIntegracaoRequest> builder)
+    public void Configure(EntityTypeBuilder<CreditoIntegracao> builder)
     {
          builder.ToTable("credito");
 

@@ -1,5 +1,5 @@
 using CreditosApi.Data.Configuration;
-using CreditosApi.Models.Request;
+using CreditosApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CreditosApi.Data;
@@ -7,7 +7,7 @@ namespace CreditosApi.Data;
 public class CreditoDbContext : DbContext
 {
 
-    public DbSet<CreditoIntegracaoRequest> Creditos { get; set; }
+    public DbSet<CreditoIntegracao> Creditos { get; set; }
 
     public CreditoDbContext(DbContextOptions<CreditoDbContext> options) : base(options)
     {

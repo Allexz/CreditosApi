@@ -5,22 +5,20 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
-
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Debug
 WORKDIR /src
 COPY ["CreditosApi/CreditosApi.csproj", "CreditosApi/"]
-RUN dotnet restore "./CreditosApi/CreditosApi.csproj"
+RUN dotnet restore "CreditosApi/CreditosApi.csproj"
 COPY . .
 WORKDIR "/src/CreditosApi"
 RUN dotnet build "./CreditosApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Debug
 RUN dotnet publish "./CreditosApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)

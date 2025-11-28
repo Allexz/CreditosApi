@@ -4,17 +4,29 @@ services:
     build:
       context: .
       dockerfile: CreditosApi/Dockerfile
+      args:
+        - BUILD_CONFIGURATION=Debug
     ports:
       - "8080:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Container
-
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - USE_HTTPS=false
+      - DB_HOST=db
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=CreditosDb;Username=postgres;Password=senha123
     depends_on:
       db:
         condition: service_healthy
-
+      kafka:
+        condition: service_started
     networks:
       - creditos-network
+    volumes:
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
 
   db:
     image: postgres:13
@@ -29,10 +41,95 @@ services:
     networks:
       - creditos-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d CreditosDb"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 15
+      start_period: 40s
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - creditos-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_started
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+    healthcheck:
+        test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
+        interval: 10s
+        timeout: 10s
+        retries: 5
+        start_period: 30s
+    
+    networks:
+      - creditos-network
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      kafka:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      echo 'Aguardando Kafka estar pronto...'
+      sleep 10
+      
+      echo 'Criando tópico integrar-credito-constituido-entry...'
+      kafka-topics --create --if-not-exists \
+        --bootstrap-server kafka:29092 \
+        --topic integrar-credito-constituido-entry \
+        --partitions 1 \
+        --replication-factor 1 || echo 'Tópico já existe ou erro ao criar'
+      
+      echo 'Tópico criado com sucesso!'
+      "
+    networks:
+      - creditos-network
+    restart: "no"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8081:8080"
+    restart: always
+    environment:
+      KAFKA_CLUSTERS_0_NAME: Local Cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - creditos-network
+    depends_on:
+      kafka:
+        condition: service_started
 
 volumes:
   postgres_data:
