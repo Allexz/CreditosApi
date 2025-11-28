@@ -1,0 +1,14 @@
+services:
+  creditosapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Container
+      - ASPNETCORE_HTTP_PORTS=8080
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - USE_HTTPS=false
+    ports:
+      - "8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
