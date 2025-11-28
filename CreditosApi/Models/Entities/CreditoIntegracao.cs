@@ -1,5 +1,4 @@
-﻿using System;
-using CreditosApi.Models.Common;
+﻿using CreditosApi.Models.Common;
 
 namespace CreditosApi.Models.Entities;
 
@@ -18,8 +17,7 @@ public sealed class CreditoIntegracao
     public decimal BaseCalculo { get; private set; }
 
     // Construtor principal para inicialização
-    private CreditoIntegracao(long id,
-                             string numeroCredito,
+    private CreditoIntegracao(string numeroCredito,
                              string numeroNfse,
                              DateTime dataConstituicao,
                              decimal valorIssqn,
@@ -30,7 +28,6 @@ public sealed class CreditoIntegracao
                              decimal valorDeducao,
                              decimal baseCalculo)
     {
-        Id = id;
         NumeroCredito = numeroCredito;
         NumeroNfse = numeroNfse;
         DataConstituicao = dataConstituicao;
@@ -43,17 +40,16 @@ public sealed class CreditoIntegracao
         BaseCalculo = baseCalculo;
     }
 
-    public static Result<CreditoIntegracao> Create(long id,
-                                           string numeroCredito,
-                                           string numeroNfse,
-                                           DateTime dataConstituicao,
-                                           decimal valorIssqn,
-                                           string tipoCredito,
-                                           bool simplesNacional,
-                                           decimal aliquota,
-                                           decimal valorFaturado,
-                                           decimal valorDeducao,
-                                           decimal baseCalculo)
+    public static Result<CreditoIntegracao> Create(string numeroCredito,
+                                                   string numeroNfse,
+                                                   DateTime dataConstituicao,
+                                                   decimal valorIssqn,
+                                                   string tipoCredito,
+                                                   bool simplesNacional,
+                                                   decimal aliquota,
+                                                   decimal valorFaturado,
+                                                   decimal valorDeducao,
+                                                   decimal baseCalculo)
     {
         // Validações para campos não nulos
         if (string.IsNullOrWhiteSpace(numeroCredito))
@@ -82,17 +78,16 @@ public sealed class CreditoIntegracao
         if (dataConstituicao < DateTime.Today)
             return Result<CreditoIntegracao>.Failure("Data de constituição não pode ser no passado.");
         
-        return Result<CreditoIntegracao>.Success(new CreditoIntegracao(id,
-                                    numeroCredito,
-                                    numeroNfse,
-                                    dataConstituicao,
-                                    valorIssqn,
-                                    tipoCredito,
-                                    simplesNacional,
-                                    aliquota,
-                                    valorFaturado,
-                                    valorDeducao,
-                                    baseCalculo))   ;
+        return Result<CreditoIntegracao>.Success(new CreditoIntegracao(numeroCredito,
+                                                                       numeroNfse,
+                                                                       dataConstituicao,
+                                                                       valorIssqn,
+                                                                       tipoCredito,
+                                                                       simplesNacional,
+                                                                       aliquota,
+                                                                       valorFaturado,
+                                                                       valorDeducao,
+                                                                       baseCalculo))   ;
     }
 
 }
